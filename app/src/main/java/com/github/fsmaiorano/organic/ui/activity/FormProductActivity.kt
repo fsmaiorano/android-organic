@@ -18,7 +18,8 @@ class FormProductActivity : AppCompatActivity() {
     }
 
     private fun setSaveButton() {
-        binding.activityFormProductButtonSave.setOnClickListener {
+        val btnSave = binding.activityFormProductButtonSave
+        btnSave.setOnClickListener {
             val newProduct = createProduct()
             dao.add(newProduct)
             finish()
@@ -28,7 +29,8 @@ class FormProductActivity : AppCompatActivity() {
     private fun createProduct(): Product {
         val name = binding.activityFormProductEdittextName.text.toString()
         val description = binding.activityFormProductEdittextDescription.text.toString()
-        val priceInText = binding.activityFormProductEdittextPrice.toString()
+
+        val priceInText = binding.activityFormProductEdittextPrice.text.toString()
         val price = if (priceInText.isBlank()) {
             BigDecimal.ZERO
         } else {
