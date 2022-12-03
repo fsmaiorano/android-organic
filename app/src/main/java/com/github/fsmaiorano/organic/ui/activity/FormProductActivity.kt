@@ -1,15 +1,12 @@
 package com.github.fsmaiorano.organic.ui.activity
 
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import coil.load
-import com.github.fsmaiorano.organic.R
 import com.github.fsmaiorano.organic.dao.ProductDao
 import com.github.fsmaiorano.organic.databinding.ActivityFormProductBinding
-import com.github.fsmaiorano.organic.databinding.ProductImageFormBinding
-import com.github.fsmaiorano.organic.extensions.tryLoadImage
 import com.github.fsmaiorano.organic.model.Product
+import com.github.fsmaiorano.organic.ui.dialog.FormImageDialog
 import java.math.BigDecimal
 
 
@@ -24,23 +21,10 @@ class FormProductActivity : AppCompatActivity() {
         setSaveButton()
 
         binding.activityFormProductImage.setOnClickListener {
-            val bindingProductImageForm = ProductImageFormBinding.inflate(layoutInflater)
-            bindingProductImageForm.productImageFormUploadButton.setOnClickListener {
-                val url = bindingProductImageForm.productImageFormEdittextImageUrl.text.toString()
-                bindingProductImageForm.productImageFormImageview.tryLoadImage(url)
+            FormImageDialog(this).show { imageUrl ->
+                url = imageUrl
+                binding.activityFormProductImage.load(url)
             }
-
-            AlertDialog.Builder(this)
-                .setView(bindingProductImageForm.root)
-                .setPositiveButton("Save") { _, _ ->
-                    url =
-                        bindingProductImageForm.productImageFormEdittextImageUrl.text.toString()
-                    binding.activityFormProductImage.tryLoadImage(url)
-                }
-                .setNegativeButton("Cancel") { _, _ ->
-                    url = null
-                }
-                .show()
         }
     }
 
