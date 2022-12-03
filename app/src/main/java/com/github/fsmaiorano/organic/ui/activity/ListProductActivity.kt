@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.github.fsmaiorano.organic.dao.ProductDao
 import com.github.fsmaiorano.organic.databinding.ActivityListProductBinding
+import com.github.fsmaiorano.organic.model.Product
 import com.github.fsmaiorano.organic.ui.recyclerview.adapter.ListProductAdapter
 
 class ListProductActivity : AppCompatActivity() {
@@ -35,9 +36,19 @@ class ListProductActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private fun goToDetailProductActivity(product: Product) {
+        val intent = Intent(this, DetailProductActivity::class.java).apply {
+            putExtra("product", product)
+        }
+        startActivity(intent)
+    }
+
     private fun setRecyclerView() {
         val recyclerview = binding.activityListProductRecyclerView
         recyclerview.adapter = adapter
+        adapter.onProductClick = { product ->
+            goToDetailProductActivity(product)
+        }
     }
 }
 

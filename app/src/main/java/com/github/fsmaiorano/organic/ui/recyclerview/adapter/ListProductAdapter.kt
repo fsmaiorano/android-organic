@@ -6,8 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import com.github.fsmaiorano.organic.R
 import com.github.fsmaiorano.organic.databinding.ProductItemBinding
 import com.github.fsmaiorano.organic.extensions.tryLoadImage
 import com.github.fsmaiorano.organic.model.Product
@@ -15,15 +13,31 @@ import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.*
 
-class ListProductAdapter(private val context: Context, products: List<Product>) :
+class ListProductAdapter(
+    private val context: Context,
+    products: List<Product>,
+    var onProductClick: (product: Product) -> Unit = {}
+) :
     RecyclerView.Adapter<ListProductAdapter.ViewHolder>() {
 
     private val products = products.toMutableList()
 
-    class ViewHolder(private val binding: ProductItemBinding) :
+    inner class ViewHolder(private val binding: ProductItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        private lateinit var product: Product
+
+        init {
+            itemView.setOnClickListener {
+                if (::product.isInitialized) {
+                    onProductClick(product)
+                }
+            }
+        }
+
         fun bind(product: Product) {
+            this.product = product
+
             val name: TextView = binding.productItemName
             name.text = product.name
             val description: TextView = binding.productItemDescription
@@ -37,9 +51,8 @@ class ListProductAdapter(private val context: Context, products: List<Product>) 
                 View.GONE
             }
 
-            binding.imageView.visibility = visibility
-
-            binding.imageView.tryLoadImage(product.imageUrl)
+            binding.productItemImageView.visibility = visibility
+            binding.productItemImageView.tryLoadImage(product.imageUrl)
         }
 
         private fun formatCurrency(value: BigDecimal): String {
