@@ -4,9 +4,11 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import coil.load
+import com.github.fsmaiorano.organic.R
 import com.github.fsmaiorano.organic.dao.ProductDao
 import com.github.fsmaiorano.organic.databinding.ActivityFormProductBinding
 import com.github.fsmaiorano.organic.databinding.ProductImageFormBinding
+import com.github.fsmaiorano.organic.extensions.tryLoadImage
 import com.github.fsmaiorano.organic.model.Product
 import java.math.BigDecimal
 
@@ -25,7 +27,7 @@ class FormProductActivity : AppCompatActivity() {
             val bindingProductImageForm = ProductImageFormBinding.inflate(layoutInflater)
             bindingProductImageForm.productImageFormUploadButton.setOnClickListener {
                 val url = bindingProductImageForm.productImageFormEdittextImageUrl.text.toString()
-                bindingProductImageForm.productImageFormImageview.load(url)
+                bindingProductImageForm.productImageFormImageview.tryLoadImage(url)
             }
 
             AlertDialog.Builder(this)
@@ -33,7 +35,7 @@ class FormProductActivity : AppCompatActivity() {
                 .setPositiveButton("Save") { _, _ ->
                     url =
                         bindingProductImageForm.productImageFormEdittextImageUrl.text.toString()
-                    binding.activityFormProductImage.load(url)
+                    binding.activityFormProductImage.tryLoadImage(url)
                 }
                 .setNegativeButton("Cancel") { _, _ ->
                     url = null

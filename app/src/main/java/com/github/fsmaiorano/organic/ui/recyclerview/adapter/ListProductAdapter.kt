@@ -2,11 +2,14 @@ package com.github.fsmaiorano.organic.ui.recyclerview.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.github.fsmaiorano.organic.R
 import com.github.fsmaiorano.organic.databinding.ProductItemBinding
+import com.github.fsmaiorano.organic.extensions.tryLoadImage
 import com.github.fsmaiorano.organic.model.Product
 import java.math.BigDecimal
 import java.text.NumberFormat
@@ -28,7 +31,15 @@ class ListProductAdapter(private val context: Context, products: List<Product>) 
             val price: TextView = binding.productItemPrice
             price.text = formatCurrency(product.price)
 
-            binding.imageView.load(product.imageUrl)
+            val visibility = if (product.imageUrl != null) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+
+            binding.imageView.visibility = visibility
+
+            binding.imageView.tryLoadImage(product.imageUrl)
         }
 
         private fun formatCurrency(value: BigDecimal): String {
@@ -57,5 +68,4 @@ class ListProductAdapter(private val context: Context, products: List<Product>) 
         this.products.addAll(products)
         notifyDataSetChanged()
     }
-
 }
