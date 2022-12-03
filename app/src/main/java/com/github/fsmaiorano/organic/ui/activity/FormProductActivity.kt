@@ -18,6 +18,7 @@ class FormProductActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        title = "New Product"
         setSaveButton()
 
         binding.activityFormProductImage.setOnClickListener {
