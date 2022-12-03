@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.github.fsmaiorano.organic.databinding.ProductItemBinding
 import com.github.fsmaiorano.organic.model.Product
 import java.math.BigDecimal
@@ -26,6 +27,8 @@ class ListProductAdapter(private val context: Context, products: List<Product>) 
             description.text = product.description
             val price: TextView = binding.productItemPrice
             price.text = formatCurrency(product.price)
+
+            binding.imageView.load(product.imageUrl)
         }
 
         private fun formatCurrency(value: BigDecimal): String {

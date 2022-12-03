@@ -14,9 +14,21 @@ class ProductDao {
 
     companion object {
         private val products = mutableListOf<Product>(
-            Product("Banana", "A banana", BigDecimal(1.83)),
-            Product("Apple", "An apple", BigDecimal(2.99)),
-            Product("Orange", "An orange", BigDecimal(3.99)),
+            Product(
+                "Banana",
+                "A banana",
+                BigDecimal(1.83)
+            ),
+            Product(
+                "Apple",
+                "An apple",
+                BigDecimal(2.99)
+            ),
+            Product(
+                "Orange",
+                "An orange",
+                BigDecimal(3.99)
+            ),
         )
     }
 }
