@@ -21,7 +21,7 @@ class FormProductActivity : AppCompatActivity() {
         setSaveButton()
 
         binding.activityFormProductImage.setOnClickListener {
-            FormImageDialog(this).show { imageUrl ->
+            FormImageDialog(this).show(url) { imageUrl ->
                 url = imageUrl
                 binding.activityFormProductImage.load(url)
             }
