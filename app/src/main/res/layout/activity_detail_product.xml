@@ -33,6 +33,7 @@
             android:textStyle="bold"
             app:chipBackgroundColor="@android:color/white"
             app:chipCornerRadius="25dp"
+
             app:layout_constraintBottom_toBottomOf="@id/activity_detail_product_imageview"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/activity_detail_product_imageview"
@@ -41,28 +42,31 @@
 
         <TextView
             android:id="@+id/activity_detail_product_textview_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_marginTop="8dp"
             android:textSize="28sp"
+            android:layout_margin="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/activity_detail_product_imageview"
-            tools:text="Product Name" />
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="@tools:sample/lorem[10]"  />
 
         <TextView
             android:id="@+id/activity_detail_product_textview_description"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:layout_marginTop="8dp"
+            android:gravity="top"
             android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/activity_detail_product_textview_name"
-            tools:text="Product Description" />
-
+            tools:text="@tools:sample/lorem/random" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
