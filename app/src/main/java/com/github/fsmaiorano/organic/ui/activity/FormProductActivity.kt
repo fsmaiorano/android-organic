@@ -49,6 +49,6 @@ class FormProductActivity : AppCompatActivity() {
         } else {
             BigDecimal(priceInText)
         }
-        return Product(name, description, price, url)
+        return Product(name = name, description = description, price = price, imageUrl = url)
     }
 }
