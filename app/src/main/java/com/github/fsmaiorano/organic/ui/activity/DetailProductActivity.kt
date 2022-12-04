@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.github.fsmaiorano.organic.databinding.ActivityDetailProductBinding
 import com.github.fsmaiorano.organic.extensions.tryLoadImage
+import com.github.fsmaiorano.organic.helpers.CurrencyHelper
 import com.github.fsmaiorano.organic.model.Product
 
 class DetailProductActivity : AppCompatActivity() {
@@ -35,7 +36,9 @@ class DetailProductActivity : AppCompatActivity() {
     private fun tryFillData(product: Product) {
         binding.apply {
             activityDetailProductImageview.tryLoadImage(product.imageUrl)
-            activityDetailProductName.text = product.name
+            activityDetailProductChipPrice.text = CurrencyHelper().formatCurrency(product.price)
+            activityDetailProductTextviewName.text = product.name
+            activityDetailProductTextviewDescription.text = product.description
         }
     }
 }

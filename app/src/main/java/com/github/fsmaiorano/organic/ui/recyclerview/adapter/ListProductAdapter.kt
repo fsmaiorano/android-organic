@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.fsmaiorano.organic.databinding.ProductItemBinding
 import com.github.fsmaiorano.organic.extensions.tryLoadImage
+import com.github.fsmaiorano.organic.helpers.CurrencyHelper
 import com.github.fsmaiorano.organic.model.Product
 import java.math.BigDecimal
 import java.text.NumberFormat
@@ -43,7 +44,7 @@ class ListProductAdapter(
             val description: TextView = binding.productItemDescription
             description.text = product.description
             val price: TextView = binding.productItemPrice
-            price.text = formatCurrency(product.price)
+            price.text =  CurrencyHelper().formatCurrency(product.price)
 
             val visibility = if (product.imageUrl != null) {
                 View.VISIBLE
@@ -53,11 +54,6 @@ class ListProductAdapter(
 
             binding.productItemImageView.visibility = visibility
             binding.productItemImageView.tryLoadImage(product.imageUrl)
-        }
-
-        private fun formatCurrency(value: BigDecimal): String {
-            val formatter: NumberFormat = NumberFormat.getCurrencyInstance(Locale("pt", "pt"))
-            return formatter.format(value)
         }
     }
 
