@@ -12,9 +12,11 @@ import java.math.BigDecimal
 
 
 class FormProductActivity : AppCompatActivity() {
-    private var idProduct = 0L
+    private var idProduct: Long? = 0L
+    private var product: Product? = null
     private var url: String? = null
     private val binding by lazy { ActivityFormProductBinding.inflate(layoutInflater) }
+    private val productDao by lazy { AppDatabase.instance(this).productDao() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,44 +40,44 @@ class FormProductActivity : AppCompatActivity() {
         if (productData != null) {
             title = "Edit Product"
             idProduct = productData.id
-            url = productData.imageUrl
-            binding.activityFormProductEdittextName.setText(productData.name)
-            binding.activityFormProductEdittextDescription.setText(productData.description)
-            binding.activityFormProductEdittextPrice.setText(
-                productData.price.toPlainString()
-            )
-            binding.activityFormProductImage.load(productData.imageUrl)
+            productSearch()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    private fun productSearch() {
+        idProduct?.let { id ->
+            productDao.getById(id)?.let { storedProduct ->
+                product = storedProduct
+            }
+
+            product?.let {
+                idProduct = product!!.id
+                url = product!!.imageUrl
+                binding.activityFormProductEdittextName.setText(product!!.name)
+                binding.activityFormProductEdittextDescription.setText(product!!.description)
+                binding.activityFormProductEdittextPrice.setText(
+                    product!!.price.toPlainString()
+                )
+                binding.activityFormProductImage.load(product!!.imageUrl)
+            } ?: finish()
         }
     }
 
     private fun setSaveButton() {
         val btnSave = binding.activityFormProductButtonSave
-
-        val db = AppDatabase.instance(this)
-
-        val productDao = db.productDao()
-
         btnSave.setOnClickListener {
             val newProduct = createProduct()
-            if (idProduct > 0) {
+            if (idProduct != 0L) {
                 productDao.update(
-                    Product(
-                        idProduct,
-                        newProduct.name,
-                        newProduct.description,
-                        newProduct.price,
-                        newProduct.imageUrl
-                    )
+                    newProduct
                 )
             } else {
                 productDao.insert(
-                    Product(
-                        0,
-                        newProduct.name,
-                        newProduct.description,
-                        newProduct.price,
-                        newProduct.imageUrl
-                    )
+                    newProduct
                 )
             }
             finish()
@@ -92,7 +94,7 @@ class FormProductActivity : AppCompatActivity() {
             BigDecimal(priceInText)
         }
         return Product(
-            id = idProduct,
+            id = idProduct ?: 0L,
             name = name,
             description = description,
             price = price,

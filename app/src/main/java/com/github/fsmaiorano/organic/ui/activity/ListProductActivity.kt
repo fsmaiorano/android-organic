@@ -3,9 +3,7 @@ package com.github.fsmaiorano.organic.ui.activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.github.fsmaiorano.organic.R
 import com.github.fsmaiorano.organic.database.AppDatabase
 import com.github.fsmaiorano.organic.databinding.ActivityListProductBinding
 import com.github.fsmaiorano.organic.model.Product
@@ -44,13 +42,6 @@ class ListProductActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun goToDetailProductActivity(product: Product) {
-        val intent = Intent(this, DetailProductActivity::class.java).apply {
-            putExtra("product", product)
-        }
-        startActivity(intent)
-    }
-
     private fun setRecyclerView() {
         val recyclerview = binding.activityListProductRecyclerView
         recyclerview.adapter = adapter
@@ -63,6 +54,13 @@ class ListProductActivity : AppCompatActivity() {
         adapter.onDeleteProductClick = { product ->
             Log.i("ListProductActivity", "Delete product ${product.name}")
         }
+    }
+
+    private fun goToDetailProductActivity(product: Product) {
+        val intent = Intent(this, DetailProductActivity::class.java).apply {
+            putExtra("productId", product.id)
+        }
+        startActivity(intent)
     }
 
     private fun setSeed() {

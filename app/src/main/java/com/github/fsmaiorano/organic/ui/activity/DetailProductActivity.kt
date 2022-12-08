@@ -1,7 +1,6 @@
 package com.github.fsmaiorano.organic.ui.activity
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -24,20 +23,11 @@ class DetailProductActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         tryLoadProduct()
-
     }
 
     override fun onResume() {
         super.onResume()
-        productId?.let { id ->
-            productDao.getById(id)?.let { storedProduct ->
-                product = storedProduct
-            }
-
-            product?.let {
-                tryFillData(it)
-            } ?: finish()
-        }
+        productSearch();
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -61,26 +51,32 @@ class DetailProductActivity : AppCompatActivity() {
                 product?.let { productDao.delete(it) }
                 finish()
             }
-
         }
 
         return super.onOptionsItemSelected(item)
     }
 
-    private fun tryLoadProduct() {
-        val productData = if (Build.VERSION.SDK_INT >= 33) {
-            intent.getParcelableExtra("product", Product::class.java)
-        } else {
-            intent.getParcelableExtra<Product>("product")
-        }
+    private fun productSearch(){
+        productId?.let { id ->
+            productDao.getById(id)?.let { storedProduct ->
+                product = storedProduct
+            }
 
-        if (productData == null) {
-            finish()
-        } else {
-            product = productData
-            productId = productData.id
-            tryFillData(productData)
+            product?.let {
+                tryFillData(it)
+            } ?: finish()
         }
+    }
+
+    private fun tryLoadProduct() {
+        productId = intent.getLongExtra("productId", 0)
+        if (productId != 0L) {
+            productDao.getById(productId!!)?.let {
+                product = it
+                tryFillData(it)
+            }
+        } else
+            finish()
     }
 
     private fun tryFillData(product: Product) {
