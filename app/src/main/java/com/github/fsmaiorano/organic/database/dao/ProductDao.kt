@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.github.fsmaiorano.organic.model.Product
 
 @Dao
@@ -16,4 +17,7 @@ interface ProductDao {
 
     @Delete
     fun delete(product: Product)
+
+    @Update
+    fun update(product: Product)
 }

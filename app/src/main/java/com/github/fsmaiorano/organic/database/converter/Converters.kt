@@ -11,7 +11,7 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromBigDecimal(value: BigDecimal): Double? {
+    fun fromBigDecimal(value: BigDecimal): Double {
         return value.let { value.toDouble() }
     }
 }

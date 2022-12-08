@@ -1,11 +1,11 @@
 package com.github.fsmaiorano.organic.ui.activity
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.fsmaiorano.organic.R
 import com.github.fsmaiorano.organic.database.AppDatabase
@@ -37,6 +37,10 @@ class DetailProductActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.menu_detail_product_edit -> {
                     Log.i("DetailProductActivity", "Edit")
+                    Intent(this, FormProductActivity::class.java).apply {
+                        putExtra("product", product)
+                        startActivity(this)
+                    }
                 }
 
                 R.id.menu_detail_product_delete -> {
