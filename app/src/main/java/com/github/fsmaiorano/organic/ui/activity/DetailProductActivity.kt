@@ -15,14 +15,29 @@ import com.github.fsmaiorano.organic.helpers.CurrencyHelper
 import com.github.fsmaiorano.organic.model.Product
 
 class DetailProductActivity : AppCompatActivity() {
-
-    private lateinit var product: Product
+    private var productId: Long? = null
+    private var product: Product? = null
     private val binding by lazy { ActivityDetailProductBinding.inflate(layoutInflater) }
+    private val productDao by lazy { AppDatabase.instance(this).productDao() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         tryLoadProduct()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        productId?.let { id ->
+            productDao.getById(id)?.let { storedProduct ->
+                product = storedProduct
+            }
+
+            product?.let {
+                tryFillData(it)
+            } ?: finish()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -31,24 +46,22 @@ class DetailProductActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (::product.isInitialized) {
-            val db = AppDatabase.instance(this)
-            val productDao = db.productDao()
-            when (item.itemId) {
-                R.id.menu_detail_product_edit -> {
-                    Log.i("DetailProductActivity", "Edit")
-                    Intent(this, FormProductActivity::class.java).apply {
-                        putExtra("product", product)
-                        startActivity(this)
-                    }
-                }
 
-                R.id.menu_detail_product_delete -> {
-                    Log.i("DetailProductActivity", "Delete")
-                    productDao.delete(product)
-                    finish()
+        when (item.itemId) {
+            R.id.menu_detail_product_edit -> {
+                Log.i("DetailProductActivity", "Edit")
+                Intent(this, FormProductActivity::class.java).apply {
+                    putExtra("product", product)
+                    startActivity(this)
                 }
             }
+
+            R.id.menu_detail_product_delete -> {
+                Log.i("DetailProductActivity", "Delete")
+                product?.let { productDao.delete(it) }
+                finish()
+            }
+
         }
 
         return super.onOptionsItemSelected(item)
@@ -65,6 +78,7 @@ class DetailProductActivity : AppCompatActivity() {
             finish()
         } else {
             product = productData
+            productId = productData.id
             tryFillData(productData)
         }
     }
