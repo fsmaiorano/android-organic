@@ -2,7 +2,10 @@ package com.github.fsmaiorano.organic.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.github.fsmaiorano.organic.R
 import com.github.fsmaiorano.organic.database.AppDatabase
 import com.github.fsmaiorano.organic.databinding.ActivityListProductBinding
 import com.github.fsmaiorano.organic.model.Product
@@ -53,6 +56,12 @@ class ListProductActivity : AppCompatActivity() {
         recyclerview.adapter = adapter
         adapter.onProductClick = { product ->
             goToDetailProductActivity(product)
+        }
+        adapter.onEditProductClick = { product ->
+            Log.i("ListProductActivity", "Edit product ${product.name}")
+        }
+        adapter.onDeleteProductClick = { product ->
+            Log.i("ListProductActivity", "Delete product ${product.name}")
         }
     }
 
