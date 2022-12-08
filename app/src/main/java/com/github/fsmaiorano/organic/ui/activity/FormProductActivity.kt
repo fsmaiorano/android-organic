@@ -3,7 +3,7 @@ package com.github.fsmaiorano.organic.ui.activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import coil.load
-import com.github.fsmaiorano.organic.dao.ProductDao
+import com.github.fsmaiorano.organic.database.AppDatabase
 import com.github.fsmaiorano.organic.databinding.ActivityFormProductBinding
 import com.github.fsmaiorano.organic.model.Product
 import com.github.fsmaiorano.organic.ui.dialog.FormImageDialog
@@ -11,7 +11,6 @@ import java.math.BigDecimal
 
 
 class FormProductActivity : AppCompatActivity() {
-    private val dao = ProductDao()
     private var url: String? = null
     private val binding by lazy { ActivityFormProductBinding.inflate(layoutInflater) }
 
@@ -31,9 +30,14 @@ class FormProductActivity : AppCompatActivity() {
 
     private fun setSaveButton() {
         val btnSave = binding.activityFormProductButtonSave
+
+        val db = AppDatabase.instance(this)
+
+        val productDao = db.productDao()
+
         btnSave.setOnClickListener {
             val newProduct = createProduct()
-            dao.add(newProduct)
+            productDao.insert(Product(0, newProduct.name, newProduct.description, newProduct.price))
             finish()
         }
     }

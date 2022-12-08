@@ -2,7 +2,11 @@ package com.github.fsmaiorano.organic.ui.activity
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.github.fsmaiorano.organic.R
 import com.github.fsmaiorano.organic.databinding.ActivityDetailProductBinding
 import com.github.fsmaiorano.organic.extensions.tryLoadImage
 import com.github.fsmaiorano.organic.helpers.CurrencyHelper
@@ -15,8 +19,25 @@ class DetailProductActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        supportActionBar?.hide()
         tryLoadProduct()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_detail_product, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_detail_product_edit -> {
+                Log.i("DetailProductActivity", "Edit")
+            }
+
+            R.id.menu_detail_product_delete -> {
+                Log.i("DetailProductActivity", "Delete")
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun tryLoadProduct() {
