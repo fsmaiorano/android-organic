@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_list_product_sort"
+        android:icon="@drawable/ic_sort_24"
+        android:title="Sort"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/menu_list_product_order_by_name_desc"
+                android:title="name desc" />
+            <item
+                android:id="@+id/menu_list_product_order_by_name_asc"
+                android:title="name asc" />
+            <item
+                android:id="@+id/menu_list_product_order_by_price_desc"
+                android:title="description desc" />
+            <item
+                android:id="@+id/menu_list_product_order_by_price_asc"
+                android:title="description asc" />
+            <item
+                android:id="@+id/menu_list_product_order_by_description_desc"
+                android:title="price desc" />
+            <item
+                android:id="@+id/menu_list_product_order_by_description_asc"
+                android:title="price asc" />
+            <item
+                android:id="@+id/menu_list_product_order_by_category"
+                android:title="No sort" />
+        </menu>
+    </item>
+</menu>

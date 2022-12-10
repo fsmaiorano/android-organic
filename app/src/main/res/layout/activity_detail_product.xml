@@ -67,6 +67,5 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/activity_detail_product_textview_name"
             tools:text="@tools:sample/lorem/random" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

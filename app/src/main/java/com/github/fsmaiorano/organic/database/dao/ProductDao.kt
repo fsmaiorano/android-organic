@@ -23,4 +23,22 @@ interface ProductDao {
 
     @Update
     fun update(product: Product)
+
+    @Query("SELECT * FROM Product ORDER BY name ASC")
+    fun getAllOrderByNameAsc(): List<Product>
+
+    @Query("SELECT * FROM Product ORDER BY name DESC")
+    fun getAllOrderByNameDesc(): List<Product>
+
+    @Query("SELECT * FROM Product ORDER BY description ASC")
+    fun getAllOrderByDescriptionAsc(): List<Product>
+
+    @Query("SELECT * FROM Product ORDER BY description DESC")
+    fun getAllOrderByDescriptionDesc(): List<Product>
+
+    @Query("SELECT * FROM Product ORDER BY price ASC")
+    fun getAllOrderByPriceAsc(): List<Product>
+
+    @Query("SELECT * FROM Product ORDER BY price DESC")
+    fun getAllOrderByPriceDesc(): List<Product>
 }
