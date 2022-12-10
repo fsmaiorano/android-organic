@@ -1,19 +1,21 @@
 package com.github.fsmaiorano.organic.ui.activity
 
-import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.github.fsmaiorano.organic.database.AppDatabase
 import com.github.fsmaiorano.organic.databinding.ActivityFormProductBinding
+import com.github.fsmaiorano.organic.extensions.tryLoadImage
 import com.github.fsmaiorano.organic.model.Product
 import com.github.fsmaiorano.organic.ui.dialog.FormImageDialog
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 
 class FormProductActivity : AppCompatActivity() {
-    private var idProduct: Long? = 0L
-    private var product: Product? = null
+    private var productId: Long = 0L
     private var url: String? = null
     private val binding by lazy { ActivityFormProductBinding.inflate(layoutInflater) }
     private val productDao by lazy { AppDatabase.instance(this).productDao() }
@@ -31,39 +33,27 @@ class FormProductActivity : AppCompatActivity() {
             }
         }
 
-        val productData = if (Build.VERSION.SDK_INT >= 33) {
-            intent.getParcelableExtra("product", Product::class.java)
-        } else {
-            intent.getParcelableExtra<Product>("product")
-        }
-
-        if (productData != null) {
-            title = "Edit Product"
-            idProduct = productData.id
-            productSearch()
-        }
+        tryLoadProduct()
     }
 
     override fun onResume() {
         super.onResume()
+        trySearchProduct()
     }
 
-    private fun productSearch() {
-        idProduct?.let { id ->
-            productDao.getById(id)?.let { storedProduct ->
-                product = storedProduct
-            }
+    private fun tryLoadProduct() {
+        productId = intent.getLongExtra("productId", 0L)
+        Log.i("FormProductActivity", "productId: $productId")
+    }
 
-            product?.let {
-                idProduct = product!!.id
-                url = product!!.imageUrl
-                binding.activityFormProductEdittextName.setText(product!!.name)
-                binding.activityFormProductEdittextDescription.setText(product!!.description)
-                binding.activityFormProductEdittextPrice.setText(
-                    product!!.price.toPlainString()
-                )
-                binding.activityFormProductImage.load(product!!.imageUrl)
-            } ?: finish()
+    private fun trySearchProduct() {
+        lifecycleScope.launch {
+            if (productId != 0L) {
+                productDao.getById(productId)?.collect { storedProduct ->
+                    title = "Edit Product"
+                    tryFillData(storedProduct)
+                }
+            }
         }
     }
 
@@ -71,16 +61,10 @@ class FormProductActivity : AppCompatActivity() {
         val btnSave = binding.activityFormProductButtonSave
         btnSave.setOnClickListener {
             val newProduct = createProduct()
-            if (idProduct != 0L) {
-                productDao.update(
-                    newProduct
-                )
-            } else {
-                productDao.insert(
-                    newProduct
-                )
+            lifecycleScope.launch {
+                productDao.save(newProduct)
+                finish()
             }
-            finish()
         }
     }
 
@@ -94,11 +78,22 @@ class FormProductActivity : AppCompatActivity() {
             BigDecimal(priceInText)
         }
         return Product(
-            id = idProduct ?: 0L,
+            id = productId,
             name = name,
             description = description,
             price = price,
             imageUrl = url
         )
+    }
+
+    private fun tryFillData(product: Product) {
+        Log.i("DetailProductActivity", "product: $product | url: $url")
+        url = product.imageUrl
+        binding.apply {
+            activityFormProductImage.tryLoadImage(product.imageUrl)
+            activityFormProductEdittextPrice.setText(product.price.toPlainString())
+            activityFormProductEdittextDescription.setText(product.description)
+            activityFormProductEdittextName.setText(product.name)
+        }
     }
 }

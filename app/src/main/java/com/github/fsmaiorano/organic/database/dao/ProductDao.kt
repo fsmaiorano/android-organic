@@ -1,44 +1,41 @@
 package com.github.fsmaiorano.organic.database.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.github.fsmaiorano.organic.model.Product
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProductDao {
     @Query("SELECT * FROM product")
-    fun getAll(): List<Product>
+    fun getAll(): Flow<List<Product>>
 
     @Query("SELECT * FROM product WHERE id = :id")
-    fun getById(id: Long): Product?
+    fun getById(id: Long): Flow<Product>?
 
-    @Insert
-    fun insert(product: Product)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun save(product: Product)
 
     @Delete
-    fun delete(product: Product)
+    suspend fun delete(product: Product)
 
     @Update
-    fun update(product: Product)
+    suspend fun update(product: Product)
 
     @Query("SELECT * FROM Product ORDER BY name ASC")
-    fun getAllOrderByNameAsc(): List<Product>
+    suspend fun getAllOrderByNameAsc(): List<Product>
 
     @Query("SELECT * FROM Product ORDER BY name DESC")
-    fun getAllOrderByNameDesc(): List<Product>
+    suspend fun getAllOrderByNameDesc(): List<Product>
 
     @Query("SELECT * FROM Product ORDER BY description ASC")
-    fun getAllOrderByDescriptionAsc(): List<Product>
+    suspend fun getAllOrderByDescriptionAsc(): List<Product>
 
     @Query("SELECT * FROM Product ORDER BY description DESC")
-    fun getAllOrderByDescriptionDesc(): List<Product>
+    suspend fun getAllOrderByDescriptionDesc(): List<Product>
 
     @Query("SELECT * FROM Product ORDER BY price ASC")
-    fun getAllOrderByPriceAsc(): List<Product>
+    suspend fun getAllOrderByPriceAsc(): List<Product>
 
     @Query("SELECT * FROM Product ORDER BY price DESC")
-    fun getAllOrderByPriceDesc(): List<Product>
+    suspend fun getAllOrderByPriceDesc(): List<Product>
 }
