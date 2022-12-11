@@ -6,11 +6,13 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.lifecycleScope
 import com.github.fsmaiorano.organic.R
 import com.github.fsmaiorano.organic.database.AppDatabase
 import com.github.fsmaiorano.organic.databinding.ActivityListProductBinding
 import com.github.fsmaiorano.organic.model.Product
+import com.github.fsmaiorano.organic.preferences.dataStore
 import com.github.fsmaiorano.organic.ui.recyclerview.adapter.ListProductAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,13 +50,21 @@ class ListProductActivity : AppCompatActivity() {
                     adapter.update(products)
                 }
             }
-            intent.getStringExtra("userId")?.let { userId ->
-                Log.i("ListProductActivity", "onCreate: $userId")
-                userDao.getById(userId)?.collect { user ->
-                    Log.i("ListProductActivity", "onCreate: $user")
-                    supportActionBar?.title = user.name
-                } ?: finish()
+
+            dataStore.data.collect { preferences ->
+                val userId = preferences[stringPreferencesKey("authenticatedUser")]
+                userDao.getById(userId?.toLong() ?: 0)?.collect { user ->
+                    Log.i("ListProductActivity", "onCreate dataStore: $user")
+                }
             }
+
+//            intent.getStringExtra("userId")?.let { userId ->
+//                Log.i("ListProductActivity", "onCreate extra: $userId")
+//                userDao.getById(userId.toLong() ?: 0)?.collect { user ->
+//                    Log.i("ListProductActivity", "onCreate storedUser: $user")
+//                    supportActionBar?.title = user.name
+//                } ?: finish()
+//            }
         }
     }
 

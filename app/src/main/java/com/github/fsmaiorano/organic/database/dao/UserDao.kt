@@ -26,5 +26,5 @@ interface UserDao {
             WHERE id = :userId
         """
     )
-    fun getById(userId: String): Flow<User>?
+    fun getById(userId: Long): Flow<User>?
 }
