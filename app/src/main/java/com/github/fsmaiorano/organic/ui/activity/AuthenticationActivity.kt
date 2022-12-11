@@ -1,17 +1,22 @@
 package com.github.fsmaiorano.organic.ui.activity
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.github.fsmaiorano.organic.database.AppDatabase
 import com.github.fsmaiorano.organic.databinding.ActivityAuthenticationBinding
-import com.github.fsmaiorano.organic.databinding.ActivityFormUserSignupBinding
-import com.github.fsmaiorano.organic.databinding.ActivityListProductBinding
 import com.github.fsmaiorano.organic.extensions.goTo
+import kotlinx.coroutines.launch
 
 class AuthenticationActivity : AppCompatActivity() {
     private val binding by lazy {
         ActivityAuthenticationBinding.inflate(layoutInflater)
+    }
+
+    private val userDao by lazy {
+        AppDatabase.instance(this).userDao()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,19 +31,24 @@ class AuthenticationActivity : AppCompatActivity() {
             val user = binding.activityAuthenticationEditTextUser.text.toString()
             val password = binding.activityAuthenticationEditTextPassword.text.toString()
             Log.i("LoginActivity", "onCreate: $user - ")
-            val intent = Intent(this, ListProductActivity::class.java).apply {
 
+            lifecycleScope.launch {
+                userDao.authentication(user, password)?.let {
+                    goTo(ListProductActivity::class.java) {
+                        putExtra("userId", it.id)
+                    }
+                } ?: Toast.makeText(
+                    this@AuthenticationActivity,
+                    "User or password invalid",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-            startActivity(intent)
         }
     }
 
     private fun setSignUpButton() {
         binding.activityAuthenticationSignUpButton.setOnClickListener {
-            val intent = Intent(this, FormUserSignUpActivity::class.java).apply {
-
-            }
-            startActivity(intent)
+            goTo(FormUserSignUpActivity::class.java)
         }
     }
 }

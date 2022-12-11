@@ -23,8 +23,11 @@ class ListProductActivity : AppCompatActivity() {
     private val binding by lazy { ActivityListProductBinding.inflate(layoutInflater) }
 
     private val productDao by lazy {
-        val db = AppDatabase.instance(this)
-        db.productDao()
+        AppDatabase.instance(this).productDao()
+    }
+
+    private val userDao by lazy {
+        AppDatabase.instance(this).userDao()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,9 +39,21 @@ class ListProductActivity : AppCompatActivity() {
         setSeed()
 
         lifecycleScope.launch {
-            setSeed()
-            productDao.getAll().collect { products ->
-                adapter.update(products)
+            launch {
+                setSeed()
+            }
+
+            launch {
+                productDao.getAll().collect { products ->
+                    adapter.update(products)
+                }
+            }
+            intent.getStringExtra("userId")?.let { userId ->
+                Log.i("ListProductActivity", "onCreate: $userId")
+                userDao.getById(userId)?.collect { user ->
+                    Log.i("ListProductActivity", "onCreate: $user")
+                    supportActionBar?.title = user.name
+                } ?: finish()
             }
         }
     }
@@ -119,9 +134,6 @@ class ListProductActivity : AppCompatActivity() {
             val editor = settings.edit()
             editor.putBoolean("SEED_APPLIED", true)
             editor.apply()
-
-            val db = AppDatabase.instance(this)
-            val productDao = db.productDao()
 
             lifecycleScope.launch() {
                 productDao.save(
