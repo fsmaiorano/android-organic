@@ -2,19 +2,22 @@ package com.github.fsmaiorano.organic.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.lifecycleScope
 import com.github.fsmaiorano.organic.R
 import com.github.fsmaiorano.organic.database.AppDatabase
 import com.github.fsmaiorano.organic.databinding.ActivityListProductBinding
+import com.github.fsmaiorano.organic.extensions.goTo
 import com.github.fsmaiorano.organic.model.Product
 import com.github.fsmaiorano.organic.preferences.dataStore
 import com.github.fsmaiorano.organic.ui.recyclerview.adapter.ListProductAdapter
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
@@ -45,18 +48,7 @@ class ListProductActivity : AppCompatActivity() {
                 setSeed()
             }
 
-            launch {
-                productDao.getAll().collect { products ->
-                    adapter.update(products)
-                }
-            }
-
-            dataStore.data.collect { preferences ->
-                val userId = preferences[stringPreferencesKey("authenticatedUser")]
-                userDao.getById(userId?.toLong() ?: 0)?.collect { user ->
-                    Log.i("ListProductActivity", "onCreate dataStore: $user")
-                }
-            }
+            verifyAuthenticatedUser()
 
 //            intent.getStringExtra("userId")?.let { userId ->
 //                Log.i("ListProductActivity", "onCreate extra: $userId")
@@ -68,12 +60,37 @@ class ListProductActivity : AppCompatActivity() {
         }
     }
 
+    private fun CoroutineScope.verifyAuthenticatedUser() {
+        launch {
+            dataStore.data.collect { preferences ->
+                preferences[stringPreferencesKey("authenticatedUser")]?.let { userId ->
+                    lifecycleScope.launch {
+                        userDao.getById(userId.toLong())?.firstOrNull()?.let {
+                            launch {
+                                searchUserProducts()
+                            }
+                        }
+                    }
+                } ?: goToAuthentication()
+            }
+        }
+    }
+
+    private suspend fun searchUserProducts() {
+        lifecycleScope.launch {
+            productDao.getAll().collect { products ->
+                adapter.update(products)
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_list_product, menu)
+        menuInflater.inflate(R.menu.menu_app_options, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -82,6 +99,11 @@ class ListProductActivity : AppCompatActivity() {
             executeMenuOption(item)
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun goToAuthentication() {
+        goTo(AuthenticationActivity::class.java)
+        finish()
     }
 
     private suspend fun executeMenuOption(item: MenuItem) {
@@ -102,12 +124,25 @@ class ListProductActivity : AppCompatActivity() {
                         productDao.getAllOrderByPriceAsc()
                     R.id.menu_list_product_order_by_category ->
                         productDao.getAllOrderByNameDesc()
+                    R.id.menu_app_options_logout -> {
+                        lifecycleScope.launch {
+                            logout()
+                        }
+                        null
+                    }
                     else -> null
                 }
             sortedProduct?.let {
                 adapter.update(it)
             }
         }
+    }
+
+    private suspend fun logout() {
+        dataStore.edit { preferences ->
+            preferences.remove(stringPreferencesKey("authenticatedUser"))
+        }
+//        goToAuthentication()
     }
 
     private fun setFab() {

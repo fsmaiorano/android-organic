@@ -2,11 +2,11 @@ package com.github.fsmaiorano.organic.ui.activity
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.github.fsmaiorano.organic.database.AppDatabase
 import com.github.fsmaiorano.organic.databinding.ActivityFormUserSignupBinding
+import com.github.fsmaiorano.organic.extensions.toast
 import com.github.fsmaiorano.organic.model.User
 import kotlinx.coroutines.launch
 
@@ -25,19 +25,18 @@ class FormUserSignUpActivity : AppCompatActivity() {
         binding.activityFormUserSignupButtonSignup.setOnClickListener {
             val newUser = createUser()
             Log.i("FormUserSignUpActivity", "onCreate: $newUser")
+            doSignUp(newUser)
+        }
+    }
 
-            lifecycleScope.launch {
-                try {
-                    userDao.save(newUser)
-                    finish()
-                } catch (e: Exception) {
-                    Log.e("FormUserSignUpActivity", "onCreate: ", e)
-                    Toast.makeText(
-                        this@FormUserSignUpActivity,
-                        "Sign up failed",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+    private fun doSignUp(newUser: User) {
+        lifecycleScope.launch {
+            try {
+                userDao.save(newUser)
+                finish()
+            } catch (e: Exception) {
+                Log.e("FormUserSignUpActivity", "onCreate: ", e)
+                toast("Sign up failed")
             }
         }
     }

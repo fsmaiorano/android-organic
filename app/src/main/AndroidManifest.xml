@@ -17,17 +17,18 @@
 
         <activity
             android:name=".ui.activity.AuthenticationActivity"
-            android:exported="true"
-            android:theme="@style/Theme.Organic.NoActionBar">
+            android:theme="@style/Theme.Organic.NoActionBar" />
+        <activity
+            android:name=".ui.activity.FormUserSignUpActivity"
+            android:label="Sign Up" />
+        <activity
+            android:name=".ui.activity.ListProductActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.activity.FormUserSignUpActivity"
-            android:label="Sign Up" />
-        <activity android:name=".ui.activity.ListProductActivity" />
         <activity android:name=".ui.activity.FormProductActivity" />
         <activity android:name=".ui.activity.DetailProductActivity" />
     </application>

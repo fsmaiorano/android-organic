@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.github.fsmaiorano.organic.database.AppDatabase
 import com.github.fsmaiorano.organic.databinding.ActivityAuthenticationBinding
 import com.github.fsmaiorano.organic.extensions.goTo
+import com.github.fsmaiorano.organic.extensions.toast
 import com.github.fsmaiorano.organic.preferences.dataStore
 import kotlinx.coroutines.launch
 
@@ -35,20 +36,20 @@ class AuthenticationActivity : AppCompatActivity() {
             val password = binding.activityAuthenticationEditTextPassword.text.toString()
             Log.i("LoginActivity", "onCreate: $user - ")
 
-            lifecycleScope.launch {
-                userDao.authentication(user, password)?.let {
-                    dataStore.edit { preferences ->
-                        preferences[stringPreferencesKey("authenticatedUser")] = it.id.toString()
-                    }
-                    goTo(ListProductActivity::class.java) {
-                        putExtra("userId", it.id)
-                    }
-                } ?: Toast.makeText(
-                    this@AuthenticationActivity,
-                    "User or password invalid",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            doAuthentication(user, password)
+        }
+    }
+
+    private fun doAuthentication(user: String, password: String) {
+        lifecycleScope.launch {
+            userDao.authentication(user, password)?.let {
+                dataStore.edit { preferences ->
+                    preferences[stringPreferencesKey("authenticatedUser")] = it.id.toString()
+                }
+                goTo(ListProductActivity::class.java) {
+                    putExtra("userId", it.id)
+                }
+            } ?: toast("Authentication error")
         }
     }
 
