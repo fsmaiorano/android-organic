@@ -1,6 +1,5 @@
 package com.github.fsmaiorano.organic.ui.activity
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -59,6 +58,7 @@ class ListProductActivity : BaseUserActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_list_product, menu)
+        menuInflater.inflate(R.menu.menu_profile_option, menu)
         menuInflater.inflate(R.menu.menu_app_options, menu)
         return super.onCreateOptionsMenu(menu)
     }
@@ -94,6 +94,11 @@ class ListProductActivity : BaseUserActivity() {
                         }
                         null
                     }
+                    R.id.menu_profile_option -> {
+                        goTo(ProfileActivity::class.java)
+                        null
+                    }
+
                     else -> null
                 }
             sortedProduct?.let {

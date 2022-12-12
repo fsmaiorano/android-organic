@@ -31,6 +31,7 @@
         </activity>
         <activity android:name=".ui.activity.FormProductActivity" />
         <activity android:name=".ui.activity.DetailProductActivity" />
+        <activity android:name=".ui.activity.ProfileActivity" />
     </application>
 
 </manifest>

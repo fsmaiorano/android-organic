@@ -19,7 +19,6 @@ class FormProductActivity : AppCompatActivity() {
     private var url: String? = null
     private val binding by lazy { ActivityFormProductBinding.inflate(layoutInflater) }
     private val productDao by lazy { AppDatabase.instance(this).productDao() }
-    private val userDao by lazy { AppDatabase.instance(this).userDao() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
