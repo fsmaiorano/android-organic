@@ -2,28 +2,24 @@ package com.github.fsmaiorano.organic.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.lifecycleScope
 import com.github.fsmaiorano.organic.R
 import com.github.fsmaiorano.organic.database.AppDatabase
 import com.github.fsmaiorano.organic.databinding.ActivityListProductBinding
 import com.github.fsmaiorano.organic.extensions.goTo
 import com.github.fsmaiorano.organic.model.Product
-import com.github.fsmaiorano.organic.preferences.dataStore
 import com.github.fsmaiorano.organic.ui.recyclerview.adapter.ListProductAdapter
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 
 
-class ListProductActivity : AppCompatActivity() {
+class ListProductActivity : BaseUserActivity() {
     private val adapter = ListProductAdapter(this)
     private val binding by lazy { ActivityListProductBinding.inflate(layoutInflater) }
 
@@ -31,9 +27,6 @@ class ListProductActivity : AppCompatActivity() {
         AppDatabase.instance(this).productDao()
     }
 
-    private val userDao by lazy {
-        AppDatabase.instance(this).userDao()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,31 +40,11 @@ class ListProductActivity : AppCompatActivity() {
             launch {
                 setSeed()
             }
-
-            verifyAuthenticatedUser()
-
-//            intent.getStringExtra("userId")?.let { userId ->
-//                Log.i("ListProductActivity", "onCreate extra: $userId")
-//                userDao.getById(userId.toLong() ?: 0)?.collect { user ->
-//                    Log.i("ListProductActivity", "onCreate storedUser: $user")
-//                    supportActionBar?.title = user.name
-//                } ?: finish()
-//            }
-        }
-    }
-
-    private fun CoroutineScope.verifyAuthenticatedUser() {
-        launch {
-            dataStore.data.collect { preferences ->
-                preferences[stringPreferencesKey("authenticatedUser")]?.let { userId ->
-                    lifecycleScope.launch {
-                        userDao.getById(userId.toLong())?.firstOrNull()?.let {
-                            launch {
-                                searchUserProducts()
-                            }
-                        }
-                    }
-                } ?: goToAuthentication()
+            launch {
+                user.filterNotNull().collect {
+                    Log.i("ListProductActivity", "User: $it")
+                    searchUserProducts()
+                }
             }
         }
     }
@@ -82,10 +55,6 @@ class ListProductActivity : AppCompatActivity() {
                 adapter.update(products)
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -99,11 +68,6 @@ class ListProductActivity : AppCompatActivity() {
             executeMenuOption(item)
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun goToAuthentication() {
-        goTo(AuthenticationActivity::class.java)
-        finish()
     }
 
     private suspend fun executeMenuOption(item: MenuItem) {
@@ -126,7 +90,7 @@ class ListProductActivity : AppCompatActivity() {
                         productDao.getAllOrderByNameDesc()
                     R.id.menu_app_options_logout -> {
                         lifecycleScope.launch {
-                            logout()
+                            logoutUser()
                         }
                         null
                     }
@@ -138,37 +102,20 @@ class ListProductActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun logout() {
-        dataStore.edit { preferences ->
-            preferences.remove(stringPreferencesKey("authenticatedUser"))
-        }
-//        goToAuthentication()
-    }
-
     private fun setFab() {
         binding.activityListProductFabButton.setOnClickListener {
-            goToFormProductActivity()
+            goTo(FormProductActivity::class.java)
         }
-    }
-
-    private fun goToFormProductActivity() {
-        val intent = Intent(this, FormProductActivity::class.java)
-        startActivity(intent)
     }
 
     private fun setRecyclerView() {
         val recyclerview = binding.activityListProductRecyclerView
         recyclerview.adapter = adapter
         adapter.onProductClick = { product ->
-            goToDetailProductActivity(product)
+            goTo(DetailProductActivity::class.java) {
+                putExtra("productId", product.id)
+            }
         }
-    }
-
-    private fun goToDetailProductActivity(product: Product) {
-        val intent = Intent(this, DetailProductActivity::class.java).apply {
-            putExtra("productId", product.id)
-        }
-        startActivity(intent)
     }
 
     private fun setSeed() {

@@ -3,14 +3,12 @@ package com.github.fsmaiorano.organic.ui.activity
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.github.fsmaiorano.organic.database.AppDatabase
 import com.github.fsmaiorano.organic.databinding.ActivityFormProductBinding
 import com.github.fsmaiorano.organic.extensions.tryLoadImage
 import com.github.fsmaiorano.organic.model.Product
-import com.github.fsmaiorano.organic.preferences.dataStore
 import com.github.fsmaiorano.organic.ui.dialog.FormImageDialog
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -45,16 +43,7 @@ class FormProductActivity : AppCompatActivity() {
     }
 
     private fun tryLoadProduct() {
-        lifecycleScope.launch {
-            dataStore.data.collect { preferences ->
-                val userId = preferences[stringPreferencesKey("authenticatedUser")]
-                userDao.getById(userId?.toLong() ?: 0)?.collect { user ->
-                    Log.i("FormProductActivity", "onCreate dataStore: $user")
-                }
-            }
-        }
-
-        Log.i("FormProductActivity", "productId: $productId")
+        productId = intent.getLongExtra("productId", 0L)
     }
 
     private fun trySearchProduct() {

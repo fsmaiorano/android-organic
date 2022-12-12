@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.github.fsmaiorano.organic.R
 import com.github.fsmaiorano.organic.database.AppDatabase
 import com.github.fsmaiorano.organic.databinding.ActivityDetailProductBinding
+import com.github.fsmaiorano.organic.extensions.goTo
 import com.github.fsmaiorano.organic.extensions.tryLoadImage
 import com.github.fsmaiorano.organic.helpers.CurrencyHelper
 import com.github.fsmaiorano.organic.model.Product
@@ -56,9 +57,8 @@ class DetailProductActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.menu_detail_product_edit -> {
                 Log.i("DetailProductActivity", "Edit")
-                Intent(this, FormProductActivity::class.java).apply {
+                goTo(FormProductActivity::class.java) {
                     putExtra("productId", productId)
-                    startActivity(this)
                 }
             }
 
