@@ -42,18 +42,16 @@ class ListProductActivity : BaseUserActivity() {
             launch {
                 user.filterNotNull().collect {
                     Log.i("ListProductActivity", "User: $it")
-                    searchUserProducts()
+                    searchUserProducts(it.id)
                 }
             }
         }
     }
 
-    private suspend fun searchUserProducts() {
-        lifecycleScope.launch {
-            productDao.getAll().collect { products ->
+    private suspend fun searchUserProducts(userId: Long) {
+            productDao.getAllByUserId(userId).collect { products ->
                 adapter.update(products)
             }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

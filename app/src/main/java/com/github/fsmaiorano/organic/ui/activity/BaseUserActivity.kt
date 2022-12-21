@@ -20,8 +20,8 @@ abstract class BaseUserActivity : AppCompatActivity() {
         AppDatabase.instance(this).userDao()
     }
 
-    private var _user: MutableStateFlow<User?> = MutableStateFlow(null)
-    protected var user: StateFlow<User?> = _user
+    private val _user: MutableStateFlow<User?> = MutableStateFlow(null)
+    protected val user: StateFlow<User?> = _user
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,9 +39,9 @@ abstract class BaseUserActivity : AppCompatActivity() {
         }
     }
 
-    private fun searchUser(userId: String) {
-        lifecycleScope.launch {
-            _user.value = userDao.getById(userId.toLong())?.firstOrNull()
+    private suspend fun searchUser(userId: String): User? {
+        return userDao.getById(userId.toLong())?.firstOrNull().also {
+            _user.value = it
         }
     }
 

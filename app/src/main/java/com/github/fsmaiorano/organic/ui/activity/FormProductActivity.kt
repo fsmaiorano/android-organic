@@ -2,7 +2,6 @@ package com.github.fsmaiorano.organic.ui.activity
 
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.github.fsmaiorano.organic.database.AppDatabase
@@ -10,11 +9,12 @@ import com.github.fsmaiorano.organic.databinding.ActivityFormProductBinding
 import com.github.fsmaiorano.organic.extensions.tryLoadImage
 import com.github.fsmaiorano.organic.model.Product
 import com.github.fsmaiorano.organic.ui.dialog.FormImageDialog
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 
-class FormProductActivity : AppCompatActivity() {
+class FormProductActivity : BaseUserActivity() {
     private var productId: Long = 0L
     private var url: String? = null
     private val binding by lazy { ActivityFormProductBinding.inflate(layoutInflater) }
@@ -59,15 +59,21 @@ class FormProductActivity : AppCompatActivity() {
     private fun setSaveButton() {
         val btnSave = binding.activityFormProductButtonSave
         btnSave.setOnClickListener {
-            val newProduct = createProduct()
             lifecycleScope.launch {
-                productDao.save(newProduct)
-                finish()
+                user.firstOrNull()?.let { user ->
+                    val newProduct = createProduct(user.id)
+                    if (newProduct.priceIsValid) {
+                        lifecycleScope.launch {
+                            productDao.save(newProduct)
+                            finish()
+                        }
+                    }
+                }
             }
         }
     }
 
-    private fun createProduct(): Product {
+    private fun createProduct(userId: Long): Product {
         val name = binding.activityFormProductEdittextName.text.toString()
         val description = binding.activityFormProductEdittextDescription.text.toString()
         val priceInText = binding.activityFormProductEdittextPrice.text.toString()
@@ -76,12 +82,14 @@ class FormProductActivity : AppCompatActivity() {
         } else {
             BigDecimal(priceInText)
         }
+
         return Product(
             id = productId,
             name = name,
             description = description,
             price = price,
-            imageUrl = url
+            imageUrl = url,
+            userId = userId.toString()
         )
     }
 

@@ -11,7 +11,7 @@ import com.github.fsmaiorano.organic.database.dao.UserDao
 import com.github.fsmaiorano.organic.model.Product
 import com.github.fsmaiorano.organic.model.User
 
-@Database(entities = [Product::class, User::class], version = 1, exportSchema = true)
+@Database(entities = [Product::class, User::class], version = 2, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun productDao(): ProductDao
@@ -23,9 +23,8 @@ abstract class AppDatabase : RoomDatabase() {
         fun instance(context: Context): AppDatabase {
             //Singleton
             return db ?: Room.databaseBuilder(context, AppDatabase::class.java, "organic.db")
-//                .fallbackToDestructiveMigration()
-                .addMigrations(MIGRATION1_2)
-                .build().also {
+                //.fallbackToDestructiveMigration()
+                .addMigrations(MIGRATION1_2, MIGRATION2_3).build().also {
                     db = it
                 }
         }

@@ -9,6 +9,9 @@ interface ProductDao {
     @Query("SELECT * FROM product")
     fun getAll(): Flow<List<Product>>
 
+    @Query("SELECT * FROM product WHERE userId = :userId")
+    fun getAllByUserId(userId: Long): Flow<List<Product>>
+
     @Query("SELECT * FROM product WHERE id = :id")
     fun getById(id: Long): Flow<Product>?
 

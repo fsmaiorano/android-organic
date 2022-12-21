@@ -9,4 +9,6 @@ data class User(
     val user: String,
     val name: String,
     val password: String
-)
+) {
+    fun isValid() = user.isNotEmpty() && name.isNotEmpty() && password.isNotEmpty()
+}
